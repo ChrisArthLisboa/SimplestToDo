@@ -1,0 +1,3 @@
+/home/lisboa/Documents/learning/3D/build/CMakeFiles/main.dir
+/home/lisboa/Documents/learning/3D/build/CMakeFiles/edit_cache.dir
+/home/lisboa/Documents/learning/3D/build/CMakeFiles/rebuild_cache.dir
