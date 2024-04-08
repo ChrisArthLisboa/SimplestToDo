@@ -1,3 +1,8 @@
 /home/lisboa/Documents/learning/3D/build/CMakeFiles/main.dir
+/home/lisboa/Documents/learning/3D/build/CMakeFiles/test.dir
 /home/lisboa/Documents/learning/3D/build/CMakeFiles/edit_cache.dir
 /home/lisboa/Documents/learning/3D/build/CMakeFiles/rebuild_cache.dir
+/home/lisboa/Documents/learning/3D/build/src/feats/CMakeFiles/feats.dir
+/home/lisboa/Documents/learning/3D/build/src/feats/CMakeFiles/test.dir
+/home/lisboa/Documents/learning/3D/build/src/feats/CMakeFiles/edit_cache.dir
+/home/lisboa/Documents/learning/3D/build/src/feats/CMakeFiles/rebuild_cache.dir

@@ -1,5 +1,9 @@
 
 cmake_minimum_required(VERSION 3.11)
+enable_testing()
+
+set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g3 -ggdb")
 
 project(
     
@@ -30,6 +34,8 @@ execute_process(
 string(REGEX REPLACE "-mfpmath=sse" "" GTK_CFLAGS "${GTK_CFLAGS}")
 string(REPLACE " " ";" GTK_CFLAGS_LIST ${GTK_CFLAGS})
 
+add_subdirectory(src/feats)
+
 file(GLOB SOURCES "src/*.c")
 add_executable(
 
@@ -39,5 +45,7 @@ add_executable(
 
 )
 
+target_compile_options(main PUBLIC src/feats)
 target_compile_options(main PRIVATE ${GTK_CFLAGS_LIST})
-target_link_libraries(main ${GTK_LIBS})
+target_link_libraries(main ${GTK_LIBS} ${PROJECT_BINARY_DIR} ${PROJECT_SOURCE_DIR})
+
