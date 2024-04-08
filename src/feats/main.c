@@ -19,63 +19,96 @@
 #include <stdbool.h>
 
 #define DIRPATH "~/.config/simplestTodo"
-#define DBPATH "~/.config/simplestTodo/todo.db"
 #define HOMEDIRSIZE 256
 
 
-
+/* 
+ * Created to fix relative
+ * file paths
+ *
+ */
 void fix_path(char* path, char* dest) {
 
     if (sizeof(path) == 0 || path[0] != '~') {
-        
         return;
-
     }
-
-    
-    char *home = getenv("HOME");
+    char home[HOMEDIRSIZE];
+    strcpy(dest, "");
+    strcpy(home, getenv("HOME"));
 
     strcat(home, (path + 1));
 
-    int i = 0;
-    while (home[i] != '\0') {
+    strcpy(dest, home);
 
-        dest[i] = home[i];
-        i++;
-
-    }
-    dest[i+1] = '\0';
+    return;
 
 }
 
 
 /*
- * 
- * check if the db already exists
- * if not create it
+ * set up files
  *
  * */
-bool start_up() {
+bool set_up() {
 
     struct stat sb;
 
     char dirpath[HOMEDIRSIZE];
     fix_path(DIRPATH, dirpath);
-    int res = mkdirat(AT_FDCWD, dirpath, S_IRWXU);
 
+    int res = mkdir(dirpath, S_IRWXU);
+
+
+    if (res == -1) {
+        
+        switch (errno) {
+            
+            case EACCES: {
+                exit(EXIT_FAILURE);
+                return false;
+                break;
+            }
+
+            case ENAMETOOLONG: {
+                exit(EXIT_FAILURE);
+                return false;
+                break;
+            }
+        }
+    }
+
+    strcat(dirpath, "/todo.db");
+    creat(dirpath, S_IRWXU);
+
+    return true;
+
+}
+
+/*
+ * checks if the setup 
+ * files exists
+ */
+
+bool checker() {
+
+    struct stat sb;
+    
+    char dirpath[HOMEDIRSIZE] = {};
+
+    fix_path(DIRPATH, dirpath);
+
+    strcat(dirpath, "/todo.db");
 
     if (
-        access(DBPATH, 0)
+        access(dirpath, 0)
     ) {
-        creat(DBPATH, S_IRWXU);
-    } 
-    else {
-        printf("File already exists\n");
+        return false;
     }
 
     return true;
 
 }
+
 
 // 1
 // needed:

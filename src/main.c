@@ -5,7 +5,14 @@
 
 int main() {
 
-    start_up();
+    if (checker()) {
+        printf("Files already exists");
+    } else {
+        set_up();
+        printf("creating files");
+    }
+
+    return 0;
 
 }
 
