@@ -1,6 +1,6 @@
 
 #include <stdio.h>
-#include "feats/main.c"
+#include "feats/setup.c"
 
 
 int main() {
