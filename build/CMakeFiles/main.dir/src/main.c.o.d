@@ -1,6 +1,6 @@
 CMakeFiles/main.dir/src/main.c.o: \
- /home/lisboa/Documents/learning/3D/src/main.c /usr/include/stdc-predef.h \
- /usr/include/stdio.h \
+ /home/lisboa/Documents/learning/SimplestToDo/src/main.c \
+ /usr/include/stdc-predef.h /usr/include/stdio.h \
  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
  /usr/include/features.h /usr/include/features-time64.h \
  /usr/include/x86_64-linux-gnu/bits/wordsize.h \
@@ -23,7 +23,7 @@ CMakeFiles/main.dir/src/main.c.o: \
  /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
  /usr/include/x86_64-linux-gnu/bits/floatn.h \
  /usr/include/x86_64-linux-gnu/bits/floatn-common.h \
- /home/lisboa/Documents/learning/3D/src/feats/main.c \
+ /home/lisboa/Documents/learning/SimplestToDo/src/feats/main.c \
  /usr/include/asm-generic/errno-base.h /usr/include/asm-generic/errno.h \
  /usr/include/sqlite3.h /usr/include/errno.h \
  /usr/include/x86_64-linux-gnu/bits/errno.h /usr/include/linux/errno.h \

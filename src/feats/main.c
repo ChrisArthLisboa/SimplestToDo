@@ -9,7 +9,6 @@
 #include <sqlite3.h>
 
 #include <errno.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
@@ -27,18 +26,18 @@
  * file paths
  *
  */
-void fix_path(char* path, char* dest) {
+void fix_path(char* path, char** dest, unsigned long* size_returned) {
 
     if (sizeof(path) == 0 || path[0] != '~') {
         return;
     }
-    char home[HOMEDIRSIZE];
-    strcpy(dest, "");
-    strcpy(home, getenv("HOME"));
 
-    strcat(home, (path + 1));
+    unsigned long path_size = strlen(path) + strlen(getenv("HOME"));
+    *dest = malloc(path_size);
 
-    strcpy(dest, home);
+    strcpy(*dest , getenv("HOME"));
+
+    strcat(*dest, (path + 1));
 
     return;
 
@@ -53,11 +52,11 @@ bool set_up() {
 
     struct stat sb;
 
-    char dirpath[HOMEDIRSIZE];
-    fix_path(DIRPATH, dirpath);
+    unsigned long path_size;
+    char *dirpath;
+    fix_path(DIRPATH, &dirpath, &path_size);
 
     int res = mkdir(dirpath, S_IRWXU);
-
 
     if (res == -1) {
         
@@ -76,9 +75,12 @@ bool set_up() {
             }
         }
     }
+    dirpath = realloc(dirpath, path_size+8);
 
     strcat(dirpath, "/todo.db");
     creat(dirpath, S_IRWXU);
+
+    free(dirpath);
 
     return true;
 
@@ -93,10 +95,12 @@ bool checker() {
 
     struct stat sb;
     
-    char dirpath[HOMEDIRSIZE] = {};
+    unsigned long path_size;
+    char *dirpath;
 
-    fix_path(DIRPATH, dirpath);
+    fix_path(DIRPATH, &dirpath, &path_size);
 
+    dirpath = realloc(dirpath, path_size+8);
     strcat(dirpath, "/todo.db");
 
     if (
@@ -105,6 +109,7 @@ bool checker() {
         return false;
     }
 
+    free(dirpath);
     return true;
 
 }
