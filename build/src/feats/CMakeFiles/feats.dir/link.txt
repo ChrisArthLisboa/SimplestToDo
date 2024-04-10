@@ -1,2 +1,0 @@
-/usr/bin/ar qc libfeats.a CMakeFiles/feats.dir/main.c.o
-/usr/bin/ranlib libfeats.a

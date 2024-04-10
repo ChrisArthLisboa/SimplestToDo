@@ -1,8 +1,0 @@
-/home/lisboa/Documents/learning/SimplestToDo/build/CMakeFiles/main.dir
-/home/lisboa/Documents/learning/SimplestToDo/build/CMakeFiles/test.dir
-/home/lisboa/Documents/learning/SimplestToDo/build/CMakeFiles/edit_cache.dir
-/home/lisboa/Documents/learning/SimplestToDo/build/CMakeFiles/rebuild_cache.dir
-/home/lisboa/Documents/learning/SimplestToDo/build/src/feats/CMakeFiles/feats.dir
-/home/lisboa/Documents/learning/SimplestToDo/build/src/feats/CMakeFiles/test.dir
-/home/lisboa/Documents/learning/SimplestToDo/build/src/feats/CMakeFiles/edit_cache.dir
-/home/lisboa/Documents/learning/SimplestToDo/build/src/feats/CMakeFiles/rebuild_cache.dir
