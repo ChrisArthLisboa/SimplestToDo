@@ -1,7 +1,7 @@
 
 # The simplest to do list with graphic interface
 
-Made for a dev who doesn't know GTK with pure C
+Made by a dev who doesn't know a thing about GTK and Sqlite3 in C
 
 ---
 
