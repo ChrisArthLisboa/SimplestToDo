@@ -1,4 +1,5 @@
 
+# https://stackoverflow.com/questions/75567031/compiling-c-project-with-sqlite3-through-cmake
 cmake_minimum_required(VERSION 3.11)
 enable_testing()
 
