@@ -1,0 +1,3 @@
+
+#define DIRPATH "~/.config/simplestTodo"
+

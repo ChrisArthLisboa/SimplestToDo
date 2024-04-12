@@ -4,11 +4,13 @@
 // 3. Delete the task;
 // 4. Schedule the task;
 
+#include "constants.h"
+
 #include <asm-generic/errno-base.h>
 #include <asm-generic/errno.h>
-#include <sqlite3.h>
 
 #include <errno.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
@@ -17,23 +19,21 @@
 
 #include <stdbool.h>
 
-#define DIRPATH "~/.config/simplestTodo"
-#define HOMEDIRSIZE 256
-
+#include <sqlite3.h>
 
 /* 
  * Created to fix relative
  * file paths
  *
  */
-void fix_path(char* path, char** dest, unsigned long* size_returned) {
+void fix_path(char* path, char** dest) {
 
     if (sizeof(path) == 0 || path[0] != '~') {
         return;
     }
 
     unsigned long path_size = strlen(path) + strlen(getenv("HOME"));
-    *dest = malloc(path_size);
+    *dest = (char*) malloc(path_size);
 
     strcpy(*dest , getenv("HOME"));
 
@@ -52,9 +52,8 @@ bool set_up() {
 
     struct stat sb;
 
-    unsigned long path_size;
     char *dirpath;
-    fix_path(DIRPATH, &dirpath, &path_size);
+    fix_path(DIRPATH, &dirpath);
 
     int res = mkdir(dirpath, S_IRWXU);
 
@@ -75,13 +74,39 @@ bool set_up() {
             }
         }
     }
-    dirpath = realloc(dirpath, path_size+8);
+
+    unsigned long path_size = strlen(dirpath);
+
+    dirpath = (char*) realloc(dirpath, path_size+8);
 
     strcat(dirpath, "/todo.db");
     creat(dirpath, S_IRWXU);
 
-    free(dirpath);
+    sqlite3 *db;
+    sqlite3_stmt *sql_response;
 
+    int rc = sqlite3_open(dirpath, &db);
+
+    if (rc != SQLITE_OK) {
+
+        printf("Error ocurred| Database: %s\n", sqlite3_errmsg(db));
+        sqlite3_close(db);
+
+        return false;
+    }
+    
+    rc = sqlite3_prepare_v2(db,
+            "Create table if not exists Task(id INT, title varchar(30), description TEXT, task_date DATE)",
+            -1, &sql_response, 0);
+    rc = sqlite3_step(sql_response);
+
+    rc = sqlite3_prepare_v2(db,
+            "Create table if not exists Categorie(id INT, task_id INT, name varchar(20), description TEXT)",
+            -1, &sql_response, 0);
+    rc = sqlite3_step(sql_response);
+
+    sqlite3_close(db);
+    free(dirpath);
     return true;
 
 }
@@ -95,12 +120,12 @@ bool checker() {
 
     struct stat sb;
     
-    unsigned long path_size;
     char *dirpath;
 
-    fix_path(DIRPATH, &dirpath, &path_size);
+    fix_path(DIRPATH, &dirpath);
+    unsigned long path_size = strlen(dirpath);
 
-    dirpath = realloc(dirpath, path_size+8);
+    dirpath = (char*) realloc(dirpath, path_size+8);
     strcat(dirpath, "/todo.db");
 
     if (
@@ -113,15 +138,3 @@ bool checker() {
     return true;
 
 }
-
-
-// 1
-// needed:
-// 1. Sqlite
-
-bool createTask() {
-
-    
-
-}
-

@@ -1,6 +1,6 @@
 
 # https://stackoverflow.com/questions/75567031/compiling-c-project-with-sqlite3-through-cmake
-cmake_minimum_required(VERSION 3.11)
+cmake_minimum_required(VERSION 3.22)
 enable_testing()
 
 set(CMAKE_BUILD_TYPE Debug)
@@ -48,5 +48,5 @@ add_executable(
 
 target_compile_options(main PUBLIC src/feats)
 target_compile_options(main PRIVATE ${GTK_CFLAGS_LIST})
-target_link_libraries(main ${GTK_LIBS} ${PROJECT_BINARY_DIR} ${PROJECT_SOURCE_DIR})
+target_link_libraries(main ${GTK_LIBS} ${PROJECT_BINARY_DIR} ${PROJECT_SOURCE_DIR} -lsqlite3)
 
