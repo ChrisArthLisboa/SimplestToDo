@@ -96,12 +96,12 @@ bool set_up() {
     }
     
     rc = sqlite3_prepare_v2(db,
-            "Create table if not exists Task(id INT, title varchar(30), description TEXT, task_date DATE)",
+            "Create table if not exists Task(id INT auto increment, title varchar(30), description TEXT, task_date DATE, priority INT)",
             -1, &sql_response, 0);
     rc = sqlite3_step(sql_response);
 
     rc = sqlite3_prepare_v2(db,
-            "Create table if not exists Categorie(id INT, task_id INT, name varchar(20), description TEXT)",
+            "Create table if not exists Tag(id INT auto increment, task_id INT, name varchar(20), description TEXT)",
             -1, &sql_response, 0);
     rc = sqlite3_step(sql_response);
 
