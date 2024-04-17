@@ -12,6 +12,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+#include <time.h>
+
+#include <math.h>
 
 
 int get_task_id(struct Task task) {
@@ -81,18 +84,37 @@ bool create_task(struct Task task) {
     rc = sqlite3_step(sql_response);
     free(query);
 
-    int task_id = get_task_id(task); // check if null
+    unsigned int task_id = get_task_id(task);
+    if (task_id == NULL) { // think another way????
+        printf("Couldnt get the new task_id\n");
+        return false;
+    }
 
-    int i = 0;
-    while(task.tags[i] != NULL) {
+    if (task.tags[0] != NULL) {
+        int i = 0;
+        int max = -INFINITY;
+
+        while (task.tags[i] != NULL) {
+
+            if (strlen(task.tags[i]) > max) {
+                max = strlen(task.tags[i]);
+            }
+            i++;
+        }
+        i = 0;
 
         query = (char*) malloc( 
-            
-            53
-
+            75 + 4 + max
         );
+        while(task.tags[i] != NULL) {
 
-        sprintf(query, "INSERT INTO Tag(task_id, name, description) VALUES ()");
+            sprintf(query, "INSERT INTO Tag(task_id, name) VALUES (\'%d\', \'%s\')", task_id, task.tags[i]);
+            rc = sqlite3_prepare_v2(db, query, -1, &sql_response, 0);
+            rc = sqlite3_step(sql_response);
+
+            i++;
+
+        }
 
     }
 
