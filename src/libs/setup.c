@@ -5,6 +5,7 @@
 // 4. Schedule the task;
 
 #include "constants.h"
+#include "utils.h"
 
 #include <asm-generic/errno-base.h>
 #include <asm-generic/errno.h>
@@ -21,27 +22,6 @@
 
 #include <sqlite3.h>
 
-/* 
- * Created to fix relative
- * file paths
- *
- */
-void fix_path(char* path, char** dest) {
-
-    if (sizeof(path) == 0 || path[0] != '~') {
-        return;
-    }
-
-    unsigned long path_size = strlen(path) + strlen(getenv("HOME"));
-    *dest = (char*) malloc(path_size);
-
-    strcpy(*dest , getenv("HOME"));
-
-    strcat(*dest, (path + 1));
-
-    return;
-
-}
 
 
 /*
@@ -96,7 +76,7 @@ bool set_up() {
     }
     
     rc = sqlite3_prepare_v2(db,
-            "Create table if not exists Task(id INT auto increment, title varchar(30), description TEXT, task_date DATE, priority INT)",
+            "Create table if not exists Task(id INT auto increment primary key, title varchar(30), description TEXT, task_date DATE, priority INT)",
             -1, &sql_response, 0);
     rc = sqlite3_step(sql_response);
 
@@ -122,11 +102,7 @@ bool checker() {
     
     char *dirpath;
 
-    fix_path(DIRPATH, &dirpath);
-    unsigned long path_size = strlen(dirpath);
-
-    dirpath = (char*) realloc(dirpath, path_size+8);
-    strcat(dirpath, "/todo.db");
+    fix_path(DBPATH, &dirpath);
 
     if (
         access(dirpath, 0)
