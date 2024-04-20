@@ -35,7 +35,7 @@ execute_process(
 string(REGEX REPLACE "-mfpmath=sse" "" GTK_CFLAGS "${GTK_CFLAGS}")
 string(REPLACE " " ";" GTK_CFLAGS_LIST ${GTK_CFLAGS})
 
-add_subdirectory(src/feats)
+add_subdirectory(src/libs)
 
 file(GLOB SOURCES "src/*.c")
 add_executable(
