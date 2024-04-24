@@ -13,42 +13,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-#include <time.h>
 
 
-int get_task_id(struct Task task) {
-
-    char* dirpath;
-    fix_path(DBPATH, &dirpath);
-
-    struct sqlite3 *db;
-    int rc = sqlite3_open(dirpath, &db);
-    struct sqlite3_stmt *sql_response;
-
-    if (rc != SQLITE_OK) {
-        printf("Error at checking DB | Database: %s\n", sqlite3_errmsg(db));
-        return -1;
-    }
-
-    char *query;
-
-    query = (char*) malloc(67 +
-            8 +
-            strlen(task.title) +
-            strlen(task.description) +
-            8);
-
-    sprintf(query, "SELECT id FROM Task WHERE title = \'%s\' && description = \'%s\' && priority = %d", task.title, task.description, task.priority);
-
-
-    rc = sqlite3_prepare_v2(db, query, -1, &sql_response, 0);
-    rc = sqlite3_step(sql_response);
+int task_id(struct Task task) {
 
 
 
-    free(query);
 }
-
 
 bool create_task(struct Task task) {
 
@@ -83,8 +54,8 @@ bool create_task(struct Task task) {
     rc = sqlite3_step(sql_response);
     free(query);
 
-    int task_id = get_task_id(task);
-    if (task_id == -1) { // think another way????
+    int task_id = -1;
+    if (task_id == -1) { 
         printf("Couldnt get the new task_id\n");
         return false;
     }
@@ -145,8 +116,8 @@ bool remove_task(struct Task task) {
         31 + 8
     );
 
-    sprintf(query, "DELETE FROM Task WHERE id = %d", get_task_id(task));
-    if (get_task_id(task) == -1) {
+    sprintf(query, "DELETE FROM Task WHERE id = %d", 0);
+    if (-1 == -1) {
         printf("task not found");
         return false;
     }

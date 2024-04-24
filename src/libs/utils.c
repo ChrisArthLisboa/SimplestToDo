@@ -2,6 +2,10 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "constants.h"
+#include <stdbool.h>
+#include <sqlite3.h>
+
 /* 
  * Created to fix relative
  * file paths
@@ -23,5 +27,4 @@ void fix_path(char* path, char** dest) {
     return;
 
 }
-
 
