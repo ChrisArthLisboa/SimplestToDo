@@ -1,4 +1,5 @@
 
+#include <stdbool.h>
 #include <stdio.h>
 #include "libs/setup.h"
 #include "libs/db.h"
@@ -14,15 +15,23 @@ int main() {
 
     char* tags[2] = {"testing", "string"}; 
 
+    char* db_error_message;
     struct Task task = {
-        .title = "Teste",
+        .title = "Buniteza",
         .date = "20/04/24",
         .priority = 0,
         .description = "A test todo",
         .tags = tags
     };
 
-    create_task(task);
+
+    /* if (!create_task(task, db_error_message)) { */
+    /*     printf("Erro: %s", db_error_message); */
+    /* } */
+    if (!remove_task(task, db_error_message)) {
+        printf("Erro: %s", db_error_message);
+    }
+    
     
 
     return 0;

@@ -46,7 +46,7 @@ add_executable(
 
 )
 
-target_compile_options(main PUBLIC src/feats)
+target_compile_options(main PUBLIC src/libs)
 target_compile_options(main PRIVATE ${GTK_CFLAGS_LIST})
 target_link_libraries(main ${GTK_LIBS} ${PROJECT_BINARY_DIR} ${PROJECT_SOURCE_DIR} -lsqlite3)
 

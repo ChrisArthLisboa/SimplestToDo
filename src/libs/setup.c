@@ -19,7 +19,6 @@
 #include <unistd.h>
 
 #include <stdbool.h>
-#include <time.h>
 
 #include <sqlite3.h>
 
@@ -77,12 +76,12 @@ bool set_up() {
     }
     
     rc = sqlite3_prepare_v2(db,
-            "Create table if not exists Task(id INT auto increment primary key, title varchar(30), description TEXT, task_date DATE, priority INT)",
+            "Create table if not exists Task(title varchar(30), description TEXT, task_date DATE, priority INT)",
             -1, &sql_response, 0);
     rc = sqlite3_step(sql_response);
 
     rc = sqlite3_prepare_v2(db,
-            "Create table if not exists Tag(id INT auto increment, task_id INT, name varchar(20), description TEXT)",
+            "Create table if not exists Tag(task_id INT, name varchar(20), description TEXT)",
             -1, &sql_response, 0);
     rc = sqlite3_step(sql_response);
 
@@ -96,7 +95,6 @@ bool set_up() {
  * checks if the setup 
  * files exists
  */
-
 bool checker() {
 
     struct stat sb;
