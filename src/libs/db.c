@@ -35,25 +35,37 @@ int get_rowid(struct Task task) {
     struct sqlite3_stmt *sql_response;
 
 
-    char *query;
     
     // SELECT id FROM Task WHERE title = '' AND description = '' AND priority = ;
-    query = (char*) malloc(
-        
-        72 +
-        strlen(task.title) +
-        strlen(task.description) +
-        8
-
-    );
-
-    sprintf(query, "SELECT rowid FROM Task WHERE title = '%s' AND description = '%s' AND priority = %d ;",
-            task.title, task.description, task.priority);
+    char *query = "SELECT rowid FROM Task WHERE title = '@taskTitle' AND description = '@taskDescription' AND priority = @taskPriority";
     
     rc = sqlite3_prepare_v2(db, query, -1, &sql_response, 0);
 
     if (rc != SQLITE_OK) {
+        
+        int task_title = sqlite3_bind_parameter_index(sql_response, "@taskTitle");
+        sqlite3_bind_text(
+                sql_response, 
+                task_title, 
+                task.title, 
+                -1,
+                free);
+
+        int task_description = sqlite3_bind_parameter_index(sql_response, "@taskDescription");
+        sqlite3_bind_text(
+                sql_response, 
+                task_description, 
+                task.description, 
+                -1,
+                free);
+
+        int task_priority = sqlite3_bind_parameter_index(sql_response, "@taskPriority");
+        sqlite3_bind_int(sql_response, task_priority, task.priority);
+
+    } else {
+        sqlite3_finalize(sql_response);
         sqlite3_close(db);
+        free(query);
 
         return -1;
     }
@@ -65,11 +77,17 @@ int get_rowid(struct Task task) {
         id = sqlite3_column_int(sql_response, 0);
 
     } else {
+
+        sqlite3_finalize(sql_response);
+        sqlite3_close(db);
+        free(query);
+
         return -1;
     }
     
     sqlite3_finalize(sql_response);
     sqlite3_close(db);
+    free(query);
     
     return id;
 
@@ -86,31 +104,67 @@ bool create_task(struct Task task) {
 
     struct sqlite3 *db;
     int rc = sqlite3_open(dirpath, &db);
-    struct sqlite3_stmt *sql_response;
     
     if (rc != SQLITE_OK) {
         printf("Error ocurred| Database: %s", sqlite3_errmsg(db));
 
-        sqlite3_finalize(sql_response);
         sqlite3_close(db);
 
         exit(1);
     }
 
-    char *query;
+    struct sqlite3_stmt *sql_response;
 
-    query = (char*) malloc( 87+
-            strlen(task.title)+
-            strlen(task.description)+
-            strlen(task.date)+
-            8 );
+    char *query = "INSERT INTO Task(title, description, task_date, priority) VALUES (\'@taskTitle\', \'@taskDesc\', \'@taskDate\', @taskPriority)";
 
-    sprintf(query, "INSERT INTO Task(title, description, task_date, priority) VALUES (\'%s\', \'%s\', \'%s\', %d)",
-            task.title, task.description, task.date, task.priority);
+    /* sprintf(query, "INSERT INTO Task(title, description, task_date, priority) VALUES (\'%s\', \'%s\', \'%s\', %d)", */
+    /*         task.title, task.description, task.date, task.priority); */
 
     rc = sqlite3_prepare_v2(db, 
             query,
             -1, &sql_response, 0);
+
+    if (rc == SQLITE_OK) {
+
+        int task_title = sqlite3_bind_parameter_index(sql_response, "@taskTitle");
+        sqlite3_bind_text(
+                sql_response, 
+                task_title, 
+                task.title, 
+                -1,
+                free);
+
+        int task_description = sqlite3_bind_parameter_index(sql_response, "@taskDesc");
+        sqlite3_bind_text(
+                sql_response, 
+                task_description, 
+                task.description, 
+                -1,
+                free);
+
+        int task_date = sqlite3_bind_parameter_index(sql_response, "@taskDate");
+        sqlite3_bind_text(
+                sql_response, 
+                task_date, 
+                task.date, 
+                -1,
+                free);
+
+        int task_priority = sqlite3_bind_parameter_index(sql_response, "@taskPriority");
+        sqlite3_bind_int(sql_response, task_priority, task.priority);
+
+    } else {
+        
+        printf("error checking | Database: %s", sqlite3_errmsg(db));
+
+        sqlite3_finalize(sql_response);
+        sqlite3_close(db);
+        free(query);
+
+        exit(1);
+
+    }
+
     rc = sqlite3_step(sql_response);
     free(query);
 
@@ -138,18 +192,25 @@ bool create_task(struct Task task) {
         }
         i = 0;
 
-        query = (char*) malloc( 
-            75 + 4 + max
-        );
+        char *query = "INSERT INTO Tag(task_id, name) VALUES (@taskId, \'@tagName\')";
+
         while(task.tags[i] != NULL) {
 
-            sprintf(query, "INSERT INTO Tag(task_id, name) VALUES (\'%d\', \'%s\')", task_id, task.tags[i]);
             rc = sqlite3_prepare_v2(db, query, -1, &sql_response, 0);
+
+            int task_id = sqlite3_bind_parameter_index(sql_response, "@taskId");
+            sqlite3_bind_int(sql_response, task_id, get_rowid(task));
+
+            int tag_name = sqlite3_bind_parameter_index(sql_response, "@taskName");
+            sqlite3_bind_text(sql_response, tag_name, task.tags[i], -1, free);
+
             rc = sqlite3_step(sql_response);
 
             i++;
 
         }
+
+        free(query);
 
     }
 
@@ -189,14 +250,7 @@ bool remove_task(struct Task task, char* error_return) {
         exit(1);
     } 
 
-    char *query;
-
-    query = (char*) malloc(
-        34 + 8
-    );
-
-    // DELETE FROM Task WHERE rowid = %d;
-    sprintf(query, "DELETE FROM Task WHERE rowid = %d", task_id);
+    char *query = "DELETE FROM Task WHERE rowid = ?";
 
     rc = sqlite3_prepare_v2(db, 
             query,
@@ -215,11 +269,13 @@ bool remove_task(struct Task task, char* error_return) {
     rc = sqlite3_step(sql_response);
 
     if (rc != SQLITE_OK || rc != 101) {
-        error_return = (char*) malloc(strlen("Error ocurred| Database: ") + strlen(sqlite3_errmsg(db)) + 10);
-        sprintf(error_return, "Error ocurred| Database: %s", sqlite3_errmsg(db));
+        printf("Error ocurred | Database: %s", sqlite3_errmsg(db));
+        free(query);
+
+        sqlite3_finalize(sql_response);
         sqlite3_close(db);
 
-        return false;
+        exit(1);
     }
 
     free(query);
