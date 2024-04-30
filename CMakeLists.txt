@@ -8,9 +8,9 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g3 -ggdb")
 
 project(
     
-    Learning_GTK
+    SimplestTodo
     VERSION 1.0
-    DESCRIPTION "A learn project with GTK and Cmake"
+    DESCRIPTION "The simplest todo with interface"
     LANGUAGES C
 
 )
