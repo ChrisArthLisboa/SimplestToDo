@@ -65,7 +65,6 @@ int get_rowid(struct Task task) {
     } else {
         sqlite3_finalize(sql_response);
         sqlite3_close(db);
-        free(query);
 
         return -1;
     }
@@ -80,14 +79,12 @@ int get_rowid(struct Task task) {
 
         sqlite3_finalize(sql_response);
         sqlite3_close(db);
-        free(query);
 
         return -1;
     }
     
     sqlite3_finalize(sql_response);
     sqlite3_close(db);
-    free(query);
     
     return id;
 
@@ -157,16 +154,13 @@ bool create_task(struct Task task) {
         
         printf("error checking | Database: %s", sqlite3_errmsg(db));
 
-        sqlite3_finalize(sql_response);
         sqlite3_close(db);
-        free(query);
 
         exit(1);
 
     }
 
     rc = sqlite3_step(sql_response);
-    free(query);
 
     int task_id = get_rowid(task);
     if (task_id == -1) { 
@@ -210,7 +204,6 @@ bool create_task(struct Task task) {
 
         }
 
-        free(query);
 
     }
 
@@ -233,7 +226,6 @@ bool remove_task(struct Task task, char* error_return) {
     if (rc != SQLITE_OK) {
         printf("Error at checking DB | Database: %s", sqlite3_errmsg(db));
 
-        sqlite3_finalize(sql_response);
         sqlite3_close(db);
 
         exit(1);
@@ -244,7 +236,6 @@ bool remove_task(struct Task task, char* error_return) {
     if (task_id == -1) {
         printf("task not found");
         
-        sqlite3_finalize(sql_response);
         sqlite3_close(db);
 
         exit(1);
@@ -258,9 +249,7 @@ bool remove_task(struct Task task, char* error_return) {
 
     if (rc != SQLITE_OK) {
         printf("Error ocurred| Database: %s", sqlite3_errmsg(db));
-        free(query);
 
-        sqlite3_finalize(sql_response);
         sqlite3_close(db);
 
         exit(1);
@@ -270,7 +259,6 @@ bool remove_task(struct Task task, char* error_return) {
 
     if (rc != SQLITE_OK || rc != 101) {
         printf("Error ocurred | Database: %s", sqlite3_errmsg(db));
-        free(query);
 
         sqlite3_finalize(sql_response);
         sqlite3_close(db);
@@ -278,7 +266,6 @@ bool remove_task(struct Task task, char* error_return) {
         exit(1);
     }
 
-    free(query);
 
     sqlite3_finalize(sql_response);
     sqlite3_close(db);
