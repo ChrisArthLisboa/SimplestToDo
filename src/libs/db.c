@@ -22,15 +22,18 @@ int get_rowid(struct Task task) {
     char* dirpath;
     fix_path(DBPATH, &dirpath);
 
+
     struct sqlite3 *db;
     int rc = sqlite3_open(dirpath, &db);
-    struct sqlite3_stmt *sql_response;
     
     if (rc != SQLITE_OK) {
         sqlite3_close(db);
 
         return -1;
     }
+
+    struct sqlite3_stmt *sql_response;
+
 
     char *query;
     
@@ -50,7 +53,6 @@ int get_rowid(struct Task task) {
     rc = sqlite3_prepare_v2(db, query, -1, &sql_response, 0);
 
     if (rc != SQLITE_OK) {
-        /* printf("Error ocurred| Database: %s", sqlite3_errmsg(db)); */
         sqlite3_close(db);
 
         return -1;
@@ -73,11 +75,9 @@ int get_rowid(struct Task task) {
 
 }
 
-bool create_task(struct Task task, char* error_return) {
+bool create_task(struct Task task) {
 
     if (get_rowid(task) != -1) {
-        error_return = (char*) malloc(strlen("Task already exists") + 10);
-        strcpy(error_return, "Task already exists");
         return false;
     }
 
@@ -89,11 +89,12 @@ bool create_task(struct Task task, char* error_return) {
     struct sqlite3_stmt *sql_response;
     
     if (rc != SQLITE_OK) {
-        error_return = (char*) malloc(strlen("Error ocurred| Database: ") + strlen(sqlite3_errmsg(db)) + 10);
-        sprintf(error_return, "Error ocurred| Database: %s", sqlite3_errmsg(db));
+        printf("Error ocurred| Database: %s", sqlite3_errmsg(db));
+
+        sqlite3_finalize(sql_response);
         sqlite3_close(db);
 
-        return false;
+        exit(1);
     }
 
     char *query;
@@ -115,9 +116,12 @@ bool create_task(struct Task task, char* error_return) {
 
     int task_id = get_rowid(task);
     if (task_id == -1) { 
-        error_return = (char*) malloc(strlen("Couldnt get the new task_id") + 10);
-        strcpy(error_return, "Couldnt get the new task_id");
-        return false;
+        printf("Couldnt get the new task_id");
+
+        sqlite3_finalize(sql_response);
+        sqlite3_close(db);
+
+        exit(1);
     }
 
     unsigned long max = 0;
@@ -166,17 +170,23 @@ bool remove_task(struct Task task, char* error_return) {
     struct sqlite3_stmt *sql_response;
 
     if (rc != SQLITE_OK) {
-        error_return = (char*) malloc(strlen("Error at checking DB | Database: %s") + strlen(sqlite3_errmsg(db)) + 10);
-        sprintf(error_return, "Error at checking DB | Database: %s", sqlite3_errmsg(db));
-        return false;
+        printf("Error at checking DB | Database: %s", sqlite3_errmsg(db));
+
+        sqlite3_finalize(sql_response);
+        sqlite3_close(db);
+
+        exit(1);
     }
 
     int task_id = get_rowid(task);
 
     if (task_id == -1) {
-        error_return = (char*) malloc(strlen("task not found") + 10);
-        strcpy(error_return, "task not found");
-        return false;
+        printf("task not found");
+        
+        sqlite3_finalize(sql_response);
+        sqlite3_close(db);
+
+        exit(1);
     } 
 
     char *query;
@@ -193,11 +203,13 @@ bool remove_task(struct Task task, char* error_return) {
             -1, &sql_response, 0);
 
     if (rc != SQLITE_OK) {
-        error_return = (char*) malloc(strlen("Error ocurred| Database: ") + strlen(sqlite3_errmsg(db)) + 10);
-        sprintf(error_return, "Error ocurred| Database: %s", sqlite3_errmsg(db));
+        printf("Error ocurred| Database: %s", sqlite3_errmsg(db));
+        free(query);
+
+        sqlite3_finalize(sql_response);
         sqlite3_close(db);
 
-        return false;
+        exit(1);
     }
 
     rc = sqlite3_step(sql_response);
