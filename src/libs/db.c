@@ -22,7 +22,6 @@ int get_rowid(struct Task task) {
     char* dirpath;
     fix_path(DBPATH, &dirpath);
 
-
     struct sqlite3 *db;
     int rc = sqlite3_open(dirpath, &db);
     
@@ -37,11 +36,11 @@ int get_rowid(struct Task task) {
 
     
     // SELECT id FROM Task WHERE title = '' AND description = '' AND priority = ;
-    char *query = "SELECT rowid FROM Task WHERE title = '@taskTitle' AND description = '@taskDescription' AND priority = @taskPriority";
+    char *query = "SELECT rowid FROM Task WHERE title = @taskTitle AND description = @taskDescription AND priority = @taskPriority";
     
     rc = sqlite3_prepare_v2(db, query, -1, &sql_response, 0);
 
-    if (rc != SQLITE_OK) {
+    if (rc == SQLITE_OK) {
         
         int task_title = sqlite3_bind_parameter_index(sql_response, "@taskTitle");
         sqlite3_bind_text(
@@ -49,7 +48,7 @@ int get_rowid(struct Task task) {
                 task_title, 
                 task.title, 
                 -1,
-                free);
+                NULL);
 
         int task_description = sqlite3_bind_parameter_index(sql_response, "@taskDescription");
         sqlite3_bind_text(
@@ -57,7 +56,7 @@ int get_rowid(struct Task task) {
                 task_description, 
                 task.description, 
                 -1,
-                free);
+                NULL);
 
         int task_priority = sqlite3_bind_parameter_index(sql_response, "@taskPriority");
         sqlite3_bind_int(sql_response, task_priority, task.priority);
@@ -90,6 +89,51 @@ int get_rowid(struct Task task) {
 
 }
 
+struct Task get_task(int rowid) {
+
+    struct Task task;
+    
+    char* dirpath;
+    fix_path(DBPATH, &dirpath);
+
+
+    struct sqlite3 *db;
+    int rc = sqlite3_open(dirpath, &db);
+    
+    if (rc != SQLITE_OK) {
+        printf("error opening db | Database: %s", sqlite3_errmsg(db));
+        sqlite3_close(db);
+
+        exit(1);
+    }
+
+    struct sqlite3_stmt *sql_response;
+
+    char *query = "SELECT * FROM Task WHERE rowid = ?";
+    
+    rc = sqlite3_prepare_v2(db, query, -1, &sql_response, 0);
+    if (rc != SQLITE_OK) {
+        printf("error preparing query: %s", sqlite3_errmsg(db));
+        sqlite3_close(db);
+
+        exit(1);
+    }
+    rc = sqlite3_bind_int(sql_response, 1, rowid);
+
+    rc = sqlite3_step(sql_response);
+
+    if (rc == SQLITE_ROW) {
+        
+        task.title = (char*) sqlite3_column_text(sql_response, 0);
+        task.description = (char*) sqlite3_column_text(sql_response, 1);
+
+    }
+
+    return task;
+
+}
+
+
 bool create_task(struct Task task) {
 
     if (get_rowid(task) != -1) {
@@ -112,10 +156,8 @@ bool create_task(struct Task task) {
 
     struct sqlite3_stmt *sql_response;
 
-    char *query = "INSERT INTO Task(title, description, task_date, priority) VALUES (\'@taskTitle\', \'@taskDesc\', \'@taskDate\', @taskPriority)";
+    char *query = "INSERT INTO Task(title, description, task_date, priority) VALUES (@taskTitle, @taskDesc, @taskDate, @taskPriority)";
 
-    /* sprintf(query, "INSERT INTO Task(title, description, task_date, priority) VALUES (\'%s\', \'%s\', \'%s\', %d)", */
-    /*         task.title, task.description, task.date, task.priority); */
 
     rc = sqlite3_prepare_v2(db, 
             query,
@@ -123,32 +165,32 @@ bool create_task(struct Task task) {
 
     if (rc == SQLITE_OK) {
 
-        int task_title = sqlite3_bind_parameter_index(sql_response, "@taskTitle");
+        int index = sqlite3_bind_parameter_index(sql_response, "@taskTitle");
         sqlite3_bind_text(
                 sql_response, 
-                task_title, 
+                index, 
                 task.title, 
                 -1,
-                free);
+                NULL);
 
-        int task_description = sqlite3_bind_parameter_index(sql_response, "@taskDesc");
+        index = sqlite3_bind_parameter_index(sql_response, "@taskDesc");
         sqlite3_bind_text(
                 sql_response, 
-                task_description, 
+                index, 
                 task.description, 
                 -1,
-                free);
+                NULL);
 
-        int task_date = sqlite3_bind_parameter_index(sql_response, "@taskDate");
+        index = sqlite3_bind_parameter_index(sql_response, "@taskDate");
         sqlite3_bind_text(
                 sql_response, 
-                task_date, 
+                index, 
                 task.date, 
                 -1,
-                free);
+                NULL);
 
-        int task_priority = sqlite3_bind_parameter_index(sql_response, "@taskPriority");
-        sqlite3_bind_int(sql_response, task_priority, task.priority);
+        index = sqlite3_bind_parameter_index(sql_response, "@taskPriority");
+        sqlite3_bind_int(sql_response, index, task.priority);
 
     } else {
         
@@ -186,7 +228,7 @@ bool create_task(struct Task task) {
         }
         i = 0;
 
-        char *query = "INSERT INTO Tag(task_id, name) VALUES (@taskId, \'@tagName\')";
+        char *query = "INSERT INTO Tag(task_id, name) VALUES (@taskId, @tagName)";
 
         while(task.tags[i] != NULL) {
 
@@ -195,8 +237,8 @@ bool create_task(struct Task task) {
             int task_id = sqlite3_bind_parameter_index(sql_response, "@taskId");
             sqlite3_bind_int(sql_response, task_id, get_rowid(task));
 
-            int tag_name = sqlite3_bind_parameter_index(sql_response, "@taskName");
-            sqlite3_bind_text(sql_response, tag_name, task.tags[i], -1, free);
+            int tag_name = sqlite3_bind_parameter_index(sql_response, "@tagName");
+            sqlite3_bind_text(sql_response, tag_name, task.tags[i], -1, NULL);
 
             rc = sqlite3_step(sql_response);
 

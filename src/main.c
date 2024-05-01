@@ -16,7 +16,14 @@ int main() {
     char* tags[2] = {"testing", "string"}; 
 
     char* db_error_message;
-    struct Task task = {
+    struct Task task1 = {
+        .title = "Uai",
+        .date = "20/04/25",
+        .priority = 0,
+        .description = "A test",
+        .tags = tags
+    };
+    struct Task task2 = {
         .title = "Buniteza",
         .date = "20/04/24",
         .priority = 0,
@@ -24,7 +31,8 @@ int main() {
         .tags = tags
     };
 
-
+    create_task(task1);
+    create_task(task2);
 
     return 0;
 
