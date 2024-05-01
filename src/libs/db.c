@@ -255,6 +255,8 @@ bool remove_task(struct Task task, char* error_return) {
         exit(1);
     }
 
+    sqlite3_bind_int(sql_response, 1, task_id);
+
     rc = sqlite3_step(sql_response);
 
     if (rc != SQLITE_OK || rc != 101) {
@@ -266,6 +268,32 @@ bool remove_task(struct Task task, char* error_return) {
         exit(1);
     }
 
+    query = "DELETE FROM Tag WHERE task_id = ?";
+
+    rc = sqlite3_prepare_v2(db, 
+            query,
+            -1, &sql_response, 0);
+
+    if (rc != SQLITE_OK) {
+        printf("Error ocurred| Database: %s", sqlite3_errmsg(db));
+
+        sqlite3_close(db);
+
+        exit(1);
+    }
+    
+    sqlite3_bind_int(sql_response, 1, task_id);
+
+    rc = sqlite3_step(sql_response);
+
+    if (rc != SQLITE_OK || rc != 101) {
+        printf("Error ocurred | Database: %s", sqlite3_errmsg(db));
+
+        sqlite3_finalize(sql_response);
+        sqlite3_close(db);
+
+        exit(1);
+    }
 
     sqlite3_finalize(sql_response);
     sqlite3_close(db);

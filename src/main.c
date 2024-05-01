@@ -25,14 +25,6 @@ int main() {
     };
 
 
-    /* if (!create_task(task, db_error_message)) { */
-    /*     printf("Erro: %s", db_error_message); */
-    /* } */
-    if (!remove_task(task, db_error_message)) {
-        printf("Erro: %s", db_error_message);
-    }
-    
-    
 
     return 0;
 
