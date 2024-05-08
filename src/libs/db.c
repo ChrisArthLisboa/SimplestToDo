@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <time.h>
 
 
 int get_rowid(struct Task task) {
@@ -89,6 +90,34 @@ int get_rowid(struct Task task) {
 
 }
 
+
+int n = 0;
+char** temp_tags;
+int get_tags_callback(void* _4param, int amount_collumns, char** collumn_values, 
+                char** name_collumns) {
+
+    temp_tags = (char**) realloc(temp_tags, n+1);
+    if (temp_tags == NULL) {
+
+        printf("error");
+        return 1;
+
+    }
+    temp_tags[n] = (char*) calloc(sizeof(char*), strlen(collumn_values[0])+2);
+    if (temp_tags == NULL) {
+
+        printf("error");
+        return 1;
+
+    }
+
+    strcpy(temp_tags[n], collumn_values[0]);
+    n++;
+
+    return 0;
+
+}
+
 struct Task get_task(int rowid) {
 
     struct Task task;
@@ -126,8 +155,44 @@ struct Task get_task(int rowid) {
         
         task.title = (char*) sqlite3_column_text(sql_response, 0);
         task.description = (char*) sqlite3_column_text(sql_response, 1);
+        task.date = (char*) sqlite3_column_text(sql_response, 2);
+        task.priority = sqlite3_column_int(sql_response, 3);
 
+    } else {
+        printf("error at getting task | Database: %s", sqlite3_errmsg(db));
+        sqlite3_close(db);
+
+        exit(1);
     }
+
+    query = malloc(36);
+
+    if (query == NULL) {
+
+        printf("error at allocating");
+        exit(1);
+    }
+
+    sprintf(query, "SELECT name FROM Tag WHERE task_id = %d", rowid);
+    char* error_Msg;
+
+    rc = sqlite3_exec(db, query, get_tags_callback, 0, &error_Msg); 
+
+
+    if (rc != SQLITE_OK) {
+        printf("Failed to get Tags: \n");
+        printf("%s", error_Msg);
+
+        sqlite3_free(&error_Msg);
+        sqlite3_close(db);
+
+        exit(1);
+    }
+
+    task.tags = temp_tags; // Maybe memory leak
+
+    free(query);
+    sqlite3_close(db);
 
     return task;
 

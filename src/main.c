@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include "libs/setup.h"
 #include "libs/db.h"
+#include "libs/structs.h"
 
 int main() {
 
@@ -31,8 +32,15 @@ int main() {
         .tags = tags
     };
 
-    create_task(task1);
-    create_task(task2);
+    struct Task task = get_task(2);
+
+    printf("%s \n%s \n%d \n%s \n%s, %s",
+            task.title,
+            task.date,
+            task.priority,
+            task.description,
+            task.tags[0],
+            task.tags[1]);
 
     return 0;
 
