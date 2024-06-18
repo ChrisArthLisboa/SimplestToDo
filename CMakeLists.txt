@@ -3,8 +3,8 @@
 cmake_minimum_required(VERSION 3.22)
 enable_testing()
 
-set(CMAKE_BUILD_TYPE Debug)
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g3 -ggdb")
+# set(CMAKE_BUILD_TYPE Debug)
+# set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g3 -ggdb")
 
 project(
     
@@ -20,6 +20,7 @@ pkg_check_modules(GTK REQUIRED gtk4)
 
 include_directories(${GTK_INCLUDE_DIRS})
 link_directories(${GTK_LIBRARY_DIRS})
+
 
 execute_process(
     COMMAND pkg-config --cflags gtk4
