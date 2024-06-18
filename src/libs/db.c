@@ -321,7 +321,7 @@ bool create_task(struct Task task) {
 
 }
 
-bool remove_task(int rowid) {
+bool remove_task(struct Task task, char* error_return) {
 
     char* dirpath;
     fix_path(DBPATH, &dirpath);
@@ -338,6 +338,16 @@ bool remove_task(int rowid) {
         exit(1);
     }
 
+    int task_id = get_rowid(task);
+
+    if (task_id == -1) {
+        printf("task not found");
+        
+        sqlite3_close(db);
+
+        exit(1);
+    } 
+
     char *query = "DELETE FROM Task WHERE rowid = ?";
 
     rc = sqlite3_prepare_v2(db, 
@@ -352,12 +362,13 @@ bool remove_task(int rowid) {
         exit(1);
     }
 
-    sqlite3_bind_int(sql_response, 1, rowid);
+    sqlite3_bind_int(sql_response, 1, task_id);
 
     rc = sqlite3_step(sql_response);
 
-    if (rc != SQLITE_OK && rc != SQLITE_DONE) {
-        printf("-- Error ocurred | Database: %s\n", sqlite3_errmsg(db)); 
+    if (rc != SQLITE_OK || rc != 101) {
+        printf("Error ocurred | Database: %s", sqlite3_errmsg(db));
+
         sqlite3_finalize(sql_response);
         sqlite3_close(db);
 
@@ -378,11 +389,11 @@ bool remove_task(int rowid) {
         exit(1);
     }
     
-    sqlite3_bind_int(sql_response, 1, rowid);
+    sqlite3_bind_int(sql_response, 1, task_id);
 
     rc = sqlite3_step(sql_response);
 
-    if (rc != SQLITE_OK && rc != SQLITE_DONE) {
+    if (rc != SQLITE_OK || rc != 101) {
         printf("Error ocurred | Database: %s", sqlite3_errmsg(db));
 
         sqlite3_finalize(sql_response);
