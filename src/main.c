@@ -2,10 +2,9 @@
 #include <stdbool.h> 
 #include <stdio.h>
 #include "libs/setup.h"
-#include "libs/db.h"
-#include "libs/structs.h"
+#include "interface/main_interface.h"
 
-int main() {
+int main(int argc, char **argv) {
 
     if (checker()) {
         printf("Files already exists\n");
@@ -14,35 +13,15 @@ int main() {
         printf("creating files\n");
     }
 
-    char* tags[2] = {"testing", "string"}; 
+    /* GtkApplication *app; */
+    /* int status; */
 
-    char* db_error_message;
-    struct Task task1 = {
-        .title = "Uai",
-        .date = "20/04/25",
-        .priority = 0,
-        .description = "A test",
-        .tags = tags
-    };
-    struct Task task2 = {
-        .title = "Buniteza",
-        .date = "20/04/24",
-        .priority = 0,
-        .description = "A test todo",
-        .tags = tags
-    };
+    /* app = gtk_application_new("org.test.example", G_APPLICATION_DEFAULT_FLAGS); */
+    /* g_signal_connect(app, "activate", G_CALLBACK(activate_main), NULL); */
+    /* status = g_application_run(G_APPLICATION(app), argc, argv); */
+    /* g_object_unref(app); */
 
-    struct Task task = get_task(2);
-
-    printf("%s \n%s \n%d \n%s \n%s, %s",
-            task.title,
-            task.date,
-            task.priority,
-            task.description,
-            task.tags[0],
-            task.tags[1]);
-
-    return 0;
+    /* return status; */
 
 }
 
