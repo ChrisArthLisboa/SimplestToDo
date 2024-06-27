@@ -1,13 +1,13 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
-#include "constants.h"
 #include <stdbool.h>
 #include <sqlite3.h>
 
 /* 
- * Created to fix relative
+ * Fix relative
  * file paths
  *
  */
@@ -28,3 +28,16 @@ void fix_path(char* path, char** dest) {
 
 }
 
+/* 
+ * Help function
+ */
+void help_cmd() {
+
+    printf(
+        "\n--help : -h        request help\n"
+        "--create : -c      create a task\n"
+        "--remove : -r      remove task\n"
+        "--get : -g         get all tasks\n"
+    );
+
+}
