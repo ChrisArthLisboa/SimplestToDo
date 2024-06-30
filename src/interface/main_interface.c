@@ -1,22 +1,7 @@
 
 #include <gtk-4.0/gtk/gtk.h>
+#include "utils.h"
 
-
-static GtkWidget* create_header() {
-
-    GtkWidget *header;
-    GtkWidget *button;
-
-    header = gtk_header_bar_new();
-
-    button = gtk_toggle_button_new();
-    gtk_widget_set_tooltip_text(button, "Configuration");
-    gtk_header_bar_pack_end(GTK_HEADER_BAR(header), button);
-
-
-    return header;
-
-}
 
 
 static void activate_main(GtkApplication *app, gpointer user_data) {
